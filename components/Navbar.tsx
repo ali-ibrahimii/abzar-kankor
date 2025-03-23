@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button"
 
 const Navbar = () => {
   return (
-    <nav className='container p-5 border mx-auto'>
-        <div className='flex justify-between'>
+    <nav className='container px-25 py-5 mx-auto z-10'>
+        <div className='flex justify-between text-white'>
+            {/* left menu */}
             <div className='space-x-12 flex items-center justify-center'>
                 <h1 className='font-bold text-lg'>Logo</h1>
                 <Link className='' href="/">Home</Link>
@@ -18,11 +19,14 @@ const Navbar = () => {
                 <Link className='' href="/contact">Contact</Link>
                 <Link className='' href="/about">About</Link>
             </div>
+
+            {/* right menu */}
+            
             <div className='flex flex-row items-center'>
-                <Icon icon="ic:baseline-account-circle" width="38" height="38"  style={{color: '#000'}} />
-                <hr className='w-12 transform rotate-90' />
-                <Button asChild>
-                    <Link href="/login">Sign in</Link>
+                <Icon icon="ic:baseline-account-circle" width="38" height="38"  style={{color: '#fff'}} />
+                <hr className='w-8 transform rotate-90' />
+                <Button className='bg-white text-black hover:bg-gray-100 cursor-pointer' asChild>
+                    <Link className='cursor-pointer' href="/login">Login</Link>
                 </Button>
             </div>
         </div>
