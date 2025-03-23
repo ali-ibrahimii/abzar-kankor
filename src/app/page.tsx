@@ -11,7 +11,7 @@ const page = () => {
         muted
         />
 
-        <div className="absolute bottom-0 left-0 w-full h-26 bg-gradient-to-t from-black to-transparent z-20" />
+        <div className="absolute bottom-0 left-0 w-full h-45 bg-gradient-to-t from-black to-transparent z-20" />
 
 
 ‍‍‍‍       <div className="absolute top-0 left-0 w-full z-10">
