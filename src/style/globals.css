@@ -3,6 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: roboto;
+  src: url(/public/fonts/RobotoMono-Regular.ttf),
+       url(/public/fonts/RobotoMono-Bold.ttf),
+       url(/public/fonts/RobotoMono-Thin.ttf);
+  font-style: normal;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
