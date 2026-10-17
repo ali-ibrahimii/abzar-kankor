@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:messages": "node scripts/check-messages.mjs",
+    "prebuild": "node scripts/check-messages.mjs"
   },
   "dependencies": {
     "@radix-ui/react-navigation-menu": "^1.2.5",

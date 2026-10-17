@@ -1,0 +1,629 @@
+{
+  "meta": {
+    "locale": "en",
+    "dir": "ltr",
+    "nativeName": "English",
+    "englishName": "English",
+    "short": "EN"
+  },
+  "site": {
+    "name": "Abzar Kankor",
+    "latinName": "Abzar Kankor",
+    "tagline": "Smart preparation for the Kankor exam",
+    "description": "Question bank, flashcards, online school, and an AI tutor to help you prepare for the Kankor exam — simple, free, and in your language.",
+    "email": "info@abzarkankor.com",
+    "location": "Kabul, Afghanistan",
+    "socials": {
+      "instagram": "https://instagram.com/abzarkankor",
+      "telegram": "https://t.me/abzarkankor",
+      "facebook": "https://facebook.com/abzarkankor"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "school": "School",
+    "flashcards": "Flashcards",
+    "ai": "AI Tutor",
+    "library": "Library",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "download": "Download app",
+    "login": "Log in",
+    "register": "Sign up",
+    "menu": "Menu",
+    "close": "Close",
+    "theme": "Dark mode",
+    "language": "Language"
+  },
+  "menus": {
+    "school": {
+      "title": "Abzar Kankor School",
+      "description": "Every subject from grade 7 to 12, taught by experienced teachers, with practice and exams.",
+      "subjectsTitle": "Subjects",
+      "items": {
+        "library": {
+          "title": "School library",
+          "description": "School textbooks and study summaries with a reading plan."
+        },
+        "generalLibrary": {
+          "title": "General library",
+          "description": "Open books and public resources for everyday learning."
+        },
+        "forms": {
+          "title": "Kankor forms",
+          "description": "Forms, sample questions, and answer sheets for the Kankor exam."
+        }
+      }
+    },
+    "flashcards": {
+      "title": "Flashcards",
+      "description": "Short cards to review formulas, vocabulary, and exam tips quickly.",
+      "all": "All cards",
+      "bySubject": "By subject"
+    }
+  },
+  "common": {
+    "start": "Get started",
+    "startLearning": "Start learning",
+    "startFree": "Start for free",
+    "readLesson": "Read lesson",
+    "allSubjects": "All subjects",
+    "lessons": "lessons",
+    "chapters": "chapters",
+    "minutes": "min",
+    "pages": "pages",
+    "free": "Free",
+    "comingSoon": "Coming soon",
+    "search": "Search",
+    "searchPlaceholder": "Search…",
+    "back": "Back",
+    "next": "Next",
+    "prev": "Previous",
+    "question": "Question",
+    "answer": "Answer",
+    "flipHint": "Tap the card to see the answer",
+    "backHint": "Tap again to go back to the question",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "send": "Send",
+    "loading": "Loading…",
+    "empty": "Nothing found",
+    "viewAll": "View all",
+    "of": "of",
+    "home": "Home",
+    "breadcrumb": "Breadcrumb",
+    "comingSoonNote": "This section is being prepared."
+  },
+  "home": {
+    "hero": {
+      "badge": "Smart preparation for Kankor",
+      "brand": "Abzar Kankor",
+      "title": "Get ready for Kankor with",
+      "highlight": "small, steady steps",
+      "description": "Question bank, flashcards, online school, and an AI tutor — all in one app, in your language, for every student.",
+      "primary": "Start learning",
+      "secondary": "Download app",
+      "features": ["Free and always available", "Practical, easy-to-read content"],
+      "panel": {
+        "title": "Today's goal",
+        "streak": "12-day streak",
+        "progressLabel": "Today's plan progress",
+        "progressValue": "3 of 4 lessons",
+        "percent": "75%",
+        "cards": "24 cards",
+        "cardsNote": "to review",
+        "quiz": "1 quiz",
+        "quizNote": "today",
+        "students": "40,000+ students",
+        "studentsNote": "on the Kankor path",
+        "startHere": "Start here",
+        "progress": [
+          { "label": "Math", "value": 78, "color": "#b7f486" },
+          { "label": "Physics", "value": 64, "color": "#b8a4ff" },
+          { "label": "Chemistry", "value": 42, "color": "#7be2d1" }
+        ]
+      }
+    },
+    "subjects": {
+      "kicker": "Featured subjects",
+      "title": "Where should we start?",
+      "copy": "Pick the subject you feel like studying right now and we will build your path from there.",
+      "cta": "All subjects"
+    },
+    "tools": {
+      "kicker": "Learning tools",
+      "title": "Everything you need for Kankor",
+      "copy": "Keep lessons, practice, and review in one place — no more jumping between dozens of books and websites.",
+      "cta": "Get started"
+    },
+    "ai": {
+      "kicker": "AI tutor",
+      "title": "Stuck anywhere?",
+      "highlight": "Just ask",
+      "copy": "The Abzar Kankor assistant is like a private teacher by your side: you ask, you get a step-by-step explanation, and you practice right away.",
+      "points": [
+        "Step-by-step explanations for any question",
+        "Short practice sets and quizzes built from the lesson",
+        "Chapter summaries for the night before the exam"
+      ],
+      "cta": "Try the assistant",
+      "chat": {
+        "title": "Abzar Kankor assistant",
+        "online": "Online",
+        "question": "Explain the difference between a derivative and an integral with a simple example.",
+        "answerLabel": "Assistant reply",
+        "answer": "A derivative looks at how fast something changes, while an integral adds up many small changes. If a car covers 120 km in 2 hours, its average speed is 60 km/h; the integral rebuilds that distance from the speed.",
+        "placeholder": "Type your next question…",
+        "speed": "Answers in seconds"
+      }
+    },
+    "lessons": {
+      "kicker": "New this week",
+      "title": "Your next lesson is waiting",
+      "copy": "Browse fresh and featured lessons and keep going without delay.",
+      "cta": "Go to school"
+    },
+    "faq": {
+      "kicker": "FAQ",
+      "title": "Things you might ask",
+      "copy": "If you cannot find your answer, write to us from the contact page."
+    },
+    "cta": {
+      "badge": "Your journey starts right now",
+      "title": "Ready to take the first step?",
+      "copy": "Every lesson is free and open. Start with any subject and move one step forward each day.",
+      "button": "Start for free",
+      "note": "Free and always up to date",
+      "link": "About Abzar Kankor"
+    },
+    "statsKicker": "At a glance"
+  },
+  "stats": [
+    { "value": 40000, "suffix": "+", "label": "students with us", "icon": "Users", "tone": "primary" },
+    { "value": 1200, "suffix": "+", "label": "questions and exercises", "icon": "FileText", "tone": "emerald" },
+    { "value": 100, "suffix": "+", "label": "books in the library", "icon": "BookOpen", "tone": "amber" },
+    { "value": 50, "suffix": "", "label": "teachers ready to help", "icon": "GraduationCap", "tone": "violet" }
+  ],
+  "subjects": [
+    {
+      "slug": "math",
+      "title": "Mathematics",
+      "description": "From algebra and geometry to trigonometry and calculus, with worked examples and short exercises.",
+      "level": "Beginner to advanced",
+      "icon": "Sigma",
+      "color": "violet",
+      "lessons": 38,
+      "chapters": 9,
+      "chapterList": ["Algebra and equations", "Geometry and trigonometry", "Functions and graphs", "Limits and derivatives"]
+    },
+    {
+      "slug": "physics",
+      "title": "Physics",
+      "description": "Mechanics, electricity, and waves explained simply, with real-world problems.",
+      "level": "Beginner to advanced",
+      "icon": "Atom",
+      "color": "blue",
+      "lessons": 27,
+      "chapters": 7,
+      "chapterList": ["Motion and force", "Work and energy", "Electricity", "Waves and light"]
+    },
+    {
+      "slug": "chemistry",
+      "title": "Chemistry",
+      "description": "Reactions, solutions, and chemical calculations — step by step, without memorising.",
+      "level": "Beginner",
+      "icon": "FlaskConical",
+      "color": "emerald",
+      "lessons": 21,
+      "chapters": 6,
+      "chapterList": ["Atomic structure", "Periodic table", "Chemical reactions", "Solutions"]
+    },
+    {
+      "slug": "biology",
+      "title": "Biology",
+      "description": "Cells, genetics, and human body systems with diagrams and visual summaries.",
+      "level": "Beginner",
+      "icon": "Dna",
+      "color": "cyan",
+      "lessons": 18,
+      "chapters": 5,
+      "chapterList": ["Cells and tissues", "Genetics", "Body systems", "Ecology"]
+    },
+    {
+      "slug": "english",
+      "title": "English",
+      "description": "Grammar, vocabulary, and reading comprehension for Kankor, with listening drills and short quizzes.",
+      "level": "For everyone",
+      "icon": "Languages",
+      "color": "orange",
+      "lessons": 24,
+      "chapters": 6,
+      "chapterList": ["Tenses", "Vocabulary building", "Reading comprehension", "Advanced grammar"]
+    },
+    {
+      "slug": "dari",
+      "title": "Dari & Pashto",
+      "description": "Grammar, spelling, and reading — with exam tips and practical exercises.",
+      "level": "Beginner",
+      "icon": "BookOpen",
+      "color": "yellow",
+      "lessons": 16,
+      "chapters": 4,
+      "chapterList": ["Grammar", "Spelling", "Reading", "Writing"]
+    }
+  ],
+  "lessons": [
+    {
+      "slug": "limit-continuity",
+      "title": "Limits and continuity without formula games",
+      "summary": "Understand limits with simple examples and graphs, then try the end-of-lesson exercises.",
+      "subjectSlug": "math",
+      "subject": "Mathematics",
+      "minutes": 25,
+      "color": "violet",
+      "icon": "Sigma"
+    },
+    {
+      "slug": "newton-laws",
+      "title": "Newton's three laws in everyday life",
+      "summary": "From a moving car to a thrown stone — see Newton's laws in real examples.",
+      "subjectSlug": "physics",
+      "subject": "Physics",
+      "minutes": 30,
+      "color": "blue",
+      "icon": "Atom"
+    },
+    {
+      "slug": "periodic-table",
+      "title": "How to remember the periodic table",
+      "summary": "Instead of memorising, understand the patterns and group elements by family.",
+      "subjectSlug": "chemistry",
+      "subject": "Chemistry",
+      "minutes": 20,
+      "color": "emerald",
+      "icon": "FlaskConical"
+    },
+    {
+      "slug": "english-tenses",
+      "title": "English present tenses, once and for all",
+      "summary": "Tell present simple and present continuous apart with short sentences and drills.",
+      "subjectSlug": "english",
+      "subject": "English",
+      "minutes": 22,
+      "color": "orange",
+      "icon": "Languages"
+    }
+  ],
+  "tools": [
+    {
+      "title": "Smart flashcards",
+      "description": "Quick review cards for formulas, vocabulary, and exam tips, with spaced repetition.",
+      "href": "/flashcards",
+      "icon": "NotebookPen",
+      "color": "violet",
+      "badge": "Active"
+    },
+    {
+      "title": "AI tutor",
+      "description": "Ask any study question and get a step-by-step explanation, like a teacher beside you.",
+      "href": "/ai-learning",
+      "icon": "Bot",
+      "color": "emerald",
+      "badge": "Beta"
+    },
+    {
+      "title": "Online school",
+      "description": "Grades 7 to 12 with experienced teachers: lessons, practice, and exams in one path.",
+      "href": "/school",
+      "icon": "GraduationCap",
+      "color": "orange",
+      "badge": "Active"
+    }
+  ],
+  "books": [
+    { "title": "Kankor math question bank", "author": "Abzar Kankor team", "description": "12 years of Kankor questions with worked answers.", "color": "violet", "pages": 320, "kind": "school" },
+    { "title": "Kankor physics summary", "author": "Ahmad Rezaei", "description": "Key formulas and tips in one pocket book.", "color": "blue", "pages": 180, "kind": "school" },
+    { "title": "Chemistry in 30 days", "author": "Maryam Hosseini", "description": "A daily plan for fast chemistry review.", "color": "emerald", "pages": 210, "kind": "school" },
+    { "title": "Essential English vocabulary", "author": "Language team", "description": "800 high-frequency Kankor words with examples.", "color": "orange", "pages": 150, "kind": "general" },
+    { "title": "Visual biology", "author": "Dr. Samiullah", "description": "Practical diagrams and images of the human body.", "color": "cyan", "pages": 240, "kind": "general" },
+    { "title": "Dari and Pashto grammar", "author": "Najiba Karimi", "description": "Grammar, spelling, and reading practice.", "color": "yellow", "pages": 190, "kind": "school" },
+    { "title": "Effective study skills", "author": "Abzar Kankor team", "description": "Simple methods for focus and daily planning.", "color": "violet", "pages": 120, "kind": "general" }
+  ],
+  "faq": [
+    { "question": "Does Abzar Kankor cost anything?", "answer": "No. Lessons, flashcards, and the library are free in the base version and will stay available." },
+    { "question": "Can I study without internet?", "answer": "Lessons you have opened once are saved in the app and can be studied offline." },
+    { "question": "What languages does the site support?", "answer": "All content is available in Persian/Dari, Pashto, and English. You can switch languages from the top of the page." },
+    { "question": "How can I ask a question?", "answer": "Use the contact page or the AI tutor. Our support team replies on working days." }
+  ],
+  "flashcards": {
+    "page": {
+      "kicker": "Flashcards",
+      "title": "Fast review, lasting learning",
+      "copy": "Review formulas and key points with short cards. Tap a card to reveal the answer, then move to the next one.",
+      "whyTitle": "Why flashcards?",
+      "whyCopy": "Your brain learns better with active recall than with re-reading. Every time you test yourself, the memory gets stronger.",
+      "tips": [
+        { "icon": "Repeat", "title": "Spaced review", "text": "Cards come back at calculated intervals so they stay in long-term memory." },
+        { "icon": "Layers3", "title": "Grouped by subject", "text": "Review by lesson and chapter; you do not have to mix everything." },
+        { "icon": "Timer", "title": "Short daily sessions", "text": "Ten minutes a day is enough; small steps make the difference." }
+      ],
+      "card": "Card",
+      "allDone": "You have seen every card in this set."
+    },
+    "cards": [
+      { "subjectSlug": "math", "subject": "Mathematics", "accent": "#7c5cda", "question": "What is the derivative of f(x) = x² at x = 3?", "answer": "6. Since f′(x) = 2x, we get 2 × 3 = 6. The derivative is the slope of the tangent line at that point." },
+      { "subjectSlug": "physics", "subject": "Physics", "accent": "#4f62db", "question": "What is the SI unit of force?", "answer": "The newton (N). One newton is 1 kg·m/s², the force that gives a one-kilogram mass an acceleration of one metre per second squared." },
+      { "subjectSlug": "chemistry", "subject": "Chemistry", "accent": "#258c62", "question": "What does an element's atomic number show?", "answer": "The number of protons in the nucleus. In a neutral atom it also equals the number of electrons." },
+      { "subjectSlug": "english", "subject": "English", "accent": "#d57a4a", "question": "What is the difference between advice and advise?", "answer": "Advice is a noun (a suggestion) and advise is a verb (to give a suggestion). Example: He gave me good advice. / I advise you to rest." },
+      { "subjectSlug": "dari", "subject": "Dari", "accent": "#b88923", "question": "In the sentence «کتاب را خواندم», which word is the object?", "answer": "«کتاب» is the object, and «را» marks the object. The verb is «خواندم» and the subject is carried by the ending «ـم»." },
+      { "subjectSlug": "math", "subject": "Mathematics", "accent": "#7c5cda", "question": "What is the area of a triangle with base 6 and height 4?", "answer": "12. The triangle area formula is base × height ÷ 2: 6 × 4 ÷ 2 = 12." }
+    ]
+  },
+  "pages": {
+    "school": {
+      "kicker": "Online school",
+      "title": "From grade seven to Kankor, on one clear path",
+      "copy": "Every Kankor subject in one place: short lessons, focused practice, and simulated exams. Pick a subject and start right there.",
+      "highlights": ["Grades 7 to 12", "Experienced teachers", "Weekly practice and exams"],
+      "searchPlaceholder": "Search for a subject…",
+      "empty": "No subject matches that name."
+    },
+    "subject": {
+      "kicker": "Selected subject",
+      "chaptersTitle": "Chapters in this subject",
+      "lessonsTitle": "New lessons",
+      "flashcardsCta": "Review with flashcards",
+      "allSubjects": "All subjects",
+      "quickReview": "Quick review",
+      "emptyLessons": "Lessons for this subject are coming soon. Start with the flashcards in the meantime."
+    },
+    "ai": {
+      "kicker": "AI tutor",
+      "title": "Your private teacher, always awake",
+      "copy": "Whenever a lesson gets hard, just ask. The Abzar Kankor assistant explains, gives examples, and builds practice for you.",
+      "steps": [
+        { "icon": "MessageCircle", "title": "Ask your question", "text": "Write in Persian, Dari, or English; you do not need perfect terminology." },
+        { "icon": "Bot", "title": "Get a step-by-step answer", "text": "The assistant explains with simple examples and unpacks the formula when needed." },
+        { "icon": "BookOpenCheck", "title": "Lock it in with practice", "text": "After the explanation, try a short exercise to make sure you understood." }
+      ],
+      "note": "The assistant is in beta. If you see a wrong answer, tell us from the contact page.",
+      "feedback": "Send feedback"
+    },
+    "library": {
+      "kicker": "School library",
+      "title": "Books that stay with you",
+      "copy": "Summaries, question banks, and pocket books for quick review. The library is growing and new books arrive every week.",
+      "suggestTitle": "Looking for a specific book?",
+      "suggestCopy": "Send us the title or subject and we will prioritise it.",
+      "suggestCta": "Suggest a book"
+    },
+    "generalLibrary": {
+      "kicker": "General library",
+      "title": "Open resources for everyday learning",
+      "copy": "General books, study skills, and open resources useful for every student.",
+      "suggestTitle": "Know a good resource?",
+      "suggestCopy": "Send us a link or title and we will add it to the library.",
+      "suggestCta": "Recommend a resource"
+    },
+    "forms": {
+      "kicker": "Kankor forms",
+      "title": "Forms and practice sheets",
+      "copy": "Sample Kankor forms, answer sheets, and a preparation checklist. All files will be downloadable soon.",
+      "items": [
+        { "title": "Kankor registration form", "description": "How to fill the form and which documents you need.", "icon": "FileText" },
+        { "title": "Sample answer sheet", "description": "Practice filling an answer sheet under time pressure.", "icon": "ClipboardList" },
+        { "title": "Exam-day checklist", "description": "Everything you should prepare before the exam.", "icon": "CheckCircle2" },
+        { "title": "Past exam questions", "description": "Selected questions with worked answers.", "icon": "BookOpenCheck" }
+      ],
+      "download": "Download file",
+      "soon": "Coming soon"
+    },
+    "download": {
+      "kicker": "App",
+      "title": "Abzar Kankor, in your pocket",
+      "copy": "The mobile app is being prepared. Until it launches, use every lesson and flashcard right here in the browser.",
+      "badge": "Version 1.0 — coming soon",
+      "panelTitle": "Start on the web, then move to the",
+      "panelHighlight": "app",
+      "panelCopy": "All Abzar Kankor content is available on the web right now. When the app launches you will keep the same account and the same progress on your phone.",
+      "notify": "Notify me",
+      "startWeb": "Start on the web",
+      "stores": ["Google Play", "App Store"],
+      "features": [
+        { "icon": "WifiOff", "title": "Offline study", "text": "Read the lessons you have opened without internet." },
+        { "icon": "Bell", "title": "Review reminders", "text": "A short daily reminder to review." },
+        { "icon": "Smartphone", "title": "Sync across devices", "text": "Your progress is the same on web and mobile." }
+      ],
+      "phone": { "greeting": "Hi, Ahmad 👋", "today": "45 minutes studied today", "streak": "12-day streak — keep going!", "goal": "Today's goal", "done": "3 of 4 lessons", "offline": "Works offline too" }
+    },
+    "about": {
+      "kicker": "About us",
+      "title": "Kankor preparation, for every student",
+      "copy": "Abzar Kankor started from a simple question: why is it so hard to find a good, free resource for Kankor preparation? We are building exactly that.",
+      "paragraphs": [
+        "Every year thousands of students in Afghanistan prepare for Kankor, but most of them rely on scattered books, handwritten notes, and expensive classes. The result is that talent gives way to luck and money.",
+        "Abzar Kankor wants to close that gap: short and organised lessons, flashcards for review, a question bank, an online school, and an AI assistant that answers questions at any hour."
+      ],
+      "goal": "Our goal is simple: every student, one small step forward every day. Those small steps make the difference at the end.",
+      "quote": "«No one should fall behind their dream because they lack a book or an internet connection.»",
+      "quoteBy": "The Abzar Kankor team",
+      "values": [
+        { "icon": "HeartHandshake", "title": "Free for everyone", "text": "We believe Kankor preparation should not depend on a family's finances." },
+        { "icon": "BookOpen", "title": "Simple and clear", "text": "We explain every idea in the student's own language, without unnecessary jargon." },
+        { "icon": "Users", "title": "With you, not just teaching", "text": "With reminders, follow-up, and support, we stay beside you until exam day." }
+      ]
+    },
+    "contact": {
+      "kicker": "Contact",
+      "title": "Let's talk",
+      "copy": "If you have a question, a suggestion, or spotted a mistake in a lesson, write to us. We read every message ourselves.",
+      "formTitle": "Write to us",
+      "formCopy": "Your message is saved and appears in the dashboard; you can also send it by email.",
+      "name": "Name",
+      "namePlaceholder": "Your full name",
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "message": "Message",
+      "messagePlaceholder": "A question, a suggestion, or a problem you found…",
+      "send": "Send message",
+      "sending": "Sending…",
+      "success": "Your message was saved. Thanks for being with us!",
+      "mailto": "Send by email",
+      "channels": { "email": "Email", "location": "Address", "hours": "Support hours", "hoursValue": "Saturday to Thursday, 9 am to 5 pm" },
+      "required": "This field is required."
+    },
+    "auth": {
+      "loginKicker": "Log in",
+      "loginTitle": "Welcome back",
+      "loginCopy": "Log in with your email and password and continue where you left off.",
+      "registerKicker": "Sign up",
+      "registerTitle": "Create a free account",
+      "registerCopy": "With an account your progress is saved and follows you across devices.",
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "confirm": "Confirm password",
+      "login": "Log in",
+      "register": "Create account",
+      "noAccount": "No account yet?",
+      "haveAccount": "Already signed up?",
+      "goRegister": "Sign up",
+      "goLogin": "Log in",
+      "demo": "This is a demo version; data is stored only in this browser.",
+      "successLogin": "You are logged in!",
+      "successRegister": "Account created!",
+      "errorPassword": "Password must be at least 6 characters.",
+      "errorMatch": "Passwords do not match.",
+      "errorEmail": "Enter a valid email address.",
+      "logout": "Log out"
+    },
+    "getStarted": {
+      "kicker": "Quick start",
+      "title": "Start in three steps",
+      "copy": "Tell us your grade and your goal, and we will build your study path right here.",
+      "step1": "Choose your grade",
+      "step2": "Pick your target subjects",
+      "step3": "Daily study time",
+      "grades": ["Grade 10", "Grade 11", "Grade 12", "Graduated"],
+      "hours": ["30 minutes", "1 hour", "2 hours", "More"],
+      "next": "Next step",
+      "back": "Previous step",
+      "finish": "Build my plan",
+      "doneTitle": "Your plan is ready",
+      "doneCopy": "Based on your choices, we suggest this path:",
+      "plan": ["One short lesson every day", "Review that lesson's flashcards", "One short quiz at the weekend"],
+      "goSchool": "Go to school",
+      "goFlashcards": "See flashcards",
+      "saved": "Your choices were saved in this browser."
+    },
+    "notFound": {
+      "code": "404",
+      "title": "This page was not found",
+      "copy": "The link may have changed, or the address was typed incorrectly. Continue your path from here.",
+      "home": "Back to home",
+      "school": "See lessons"
+    }
+  },
+  "dashboard": {
+    "title": "Admin dashboard",
+    "subtitle": "View, add, and edit the site content.",
+    "welcome": "Welcome",
+    "guest": "Guest user",
+    "logout": "Log out",
+    "login": "Log in to dashboard",
+    "sections": {
+      "overview": "Overview",
+      "subjects": "Subjects",
+      "lessons": "Lessons",
+      "flashcards": "Flashcards",
+      "books": "Books",
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "stats": {
+      "subjects": "subjects",
+      "lessons": "lessons",
+      "cards": "cards",
+      "books": "books",
+      "messages": "messages"
+    },
+    "overview": {
+      "title": "Overview",
+      "recent": "Recent content",
+      "quick": "Quick actions",
+      "quickItems": ["Add a lesson", "Add a flashcard", "View messages"],
+      "tip": "This dashboard is a demo; changes are saved in this browser."
+    },
+    "table": {
+      "title": "Title",
+      "subject": "Subject",
+      "meta": "Details",
+      "actions": "Actions",
+      "search": "Search the list…",
+      "empty": "Nothing added yet.",
+      "add": "Add",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete this item?"
+    },
+    "forms": {
+      "title": "Title",
+      "description": "Description",
+      "level": "Level",
+      "color": "Color",
+      "icon": "Icon",
+      "subject": "Subject",
+      "minutes": "Duration (minutes)",
+      "author": "Author",
+      "pages": "Pages",
+      "question": "Question",
+      "answer": "Answer",
+      "name": "Name",
+      "email": "Email",
+      "message": "Message"
+    },
+    "messages": {
+      "title": "Inbox",
+      "empty": "No messages yet.",
+      "from": "From",
+      "delete": "Delete message"
+    },
+    "settings": {
+      "title": "Settings",
+      "language": "Default site language",
+      "languageHint": "You can also change the language from the site header.",
+      "data": "Data",
+      "reset": "Reset changes",
+      "resetHint": "All changes saved in this browser will be removed.",
+      "resetDone": "Changes were reset."
+    },
+    "noticeSaved": "Saved.",
+    "noticeDeleted": "Deleted."
+  },
+  "footer": {
+    "ctaTitle": "Keep the app on your phone",
+    "ctaCopy": "Download lessons and flashcards and keep going offline. The new version is on its way.",
+    "ctaDownload": "Download app",
+    "ctaSchool": "Start with school",
+    "learning": "Learning",
+    "quick": "Quick links",
+    "links": {
+      "school": "Online school",
+      "flashcards": "Flashcards",
+      "library": "Library",
+      "ai": "AI tutor",
+      "about": "About Abzar Kankor",
+      "contact": "Contact us",
+      "download": "Download app",
+      "dashboard": "Admin dashboard"
+    },
+    "copyright": "Ready for Kankor, with small steady steps.",
+    "support": "Support",
+    "backToTop": "Back to top"
+  }
+}
