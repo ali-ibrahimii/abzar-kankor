@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ابزار کانکور — Abzar Kankor
 
-## Getting Started
+وب‌سایت رسمی **ابزار کانکور**؛ یک پلتفرم آمادگی کانکور به سبک **Coursera** با دو داشبورد جدا برای **استاد** و **شاگرد**، دوره‌های قابل ساخت توسط استاد، ثبت‌نام، پیشرفت، تمرین، ارزیابی و گواهینامه.
 
-First, run the development server:
+رابط کاربری با طراحی اختصاصی (الهام‌گرفته از CodeMage) و بر پایهٔ shadcn/ui ساخته شده است. همهٔ امکانات سایت مرجع پوشش داده شده و قابلیت‌های نقش‌محور به آن اضافه شده است.
+
+## اجرا
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev              # http://localhost:3000
+npm run build            # build تولید (قبل از آن check:messages اجرا می‌شود)
+npm run start            # اجرای build
+npm run check:messages   # بررسی هم‌ترازی کلیدهای سه زبان
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> ⚠️ هنگام اجرای `next start` هرگز `next build` اجرا نکنید؛ ابتدا سرور را متوقف کنید و سپس `.next` را پاک کنید.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## حساب‌های نمایشی
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| نقش | ایمیل | رمز |
+| --- | --- | --- |
+| استاد | `teacher@abzar.dev` | `123456` |
+| شاگرد | `student@abzar.dev` | `123456` |
 
-## Learn More
+- در `/login` دو دکمهٔ **ورود سریع نمایشی** (استاد/شاگرد) وجود دارد.
+- در داشبورد هم می‌توان با کلید «نمایش به‌عنوان» بین داشبورد استاد و شاگرد جابه‌جا شد.
+- با ثبت‌نام تازه می‌توان نقش استاد یا شاگرد را انتخاب کرد.
 
-To learn more about Next.js, take a look at the following resources:
+## سه‌زبانه بودن (i18n)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- همهٔ متن‌های سایت در `src/messages/{fa,ps,en}.json` نگهداری می‌شوند — هیچ متن کاربری مستقیماً در JSX نوشته نمی‌شود.
+- زبان پیش‌فرض **فارسی (RTL)** است؛ پشتو (RTL) و انگلیسی (LTR) هم کامل هستند.
+- انتخاب زبان در کوکی `locale` ذخیره می‌شود؛ `<html lang dir>` در سمت سرور ست می‌شود.
+- `fa.json` مرجع کلیدهاست و `scripts/check-messages.mjs` کمبود/اضافهٔ کلید در دو زبان دیگر را در `prebuild` می‌گیرد.
+- `src/lib/locales.ts` = ثابت‌ها و تایپ‌های امن برای کلاینت؛ `src/lib/i18n.ts` = توابع سروری (`getDictionary`, `getLocale`).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## پشتهٔ فنی
 
-## Deploy on Vercel
+- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Tailwind CSS v4** با توکن‌های OKLCH (حالت روشن/تاریک)
+- **shadcn/ui** + **Radix UI** (کامپوننت‌های پایه در `src/components/ui` مستقیماً ویرایش شده‌اند)
+- **Vazirmatn Variable** (فونت فارسی، OFL) — فایل‌ها در `public/fonts`
+- آیکن‌ها: **lucide-react**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ساختار
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+src/
+├── app/
+│   ├── layout.tsx              # lang/dir، متادیتا، هدر/فوتر، تم
+│   ├── page.tsx                # صفحهٔ اصلی (۸ بخش)
+│   ├── school/                 # کاتالوگ دوره‌ها + [slug] صفحهٔ دوره
+│   ├── learn/[slug]/[lessonId] # فضای یادگیری (درس، پیشرفت، یادداشت، گواهینامه)
+│   ├── instructors/[id]/       # پروفایل عمومی استاد + دوره‌هایش
+│   ├── flashcards/             # فلش‌کارت + [slug] دسته‌بندی هر موضوع
+│   ├── ai-learning/            # دستیار هوش مصنوعی
+│   ├── library/                # کتابخانه + general/ (کتب عمومی)
+│   ├── forms/                  # فورم‌های کانکور
+│   ├── download/               # دانلود اپلیکیشن
+│   ├── about/                  # دربارهٔ ما + معرفی مسیر استاد و شاگرد
+│   ├── contact/                # تماس (پیام → صندوق داشبورد)
+│   ├── login/  register/       # ورود و ثبت‌نام با انتخاب نقش
+│   ├── get-started/            # برنامه‌ریز سه‌مرحله‌ای مطالعه
+│   ├── dashboard/              # داشبورد نقش‌محور (استاد/شاگرد)
+│   ├── not-found.tsx           # ۴۰۴ سفارشی سه‌زبانه
+│   └── sitemap.ts / robots.ts
+├── components/
+│   ├── layout/                 # Header (منوی کاربر)، SiteNav (مگامنو)، Footer، LanguageSwitcher
+│   ├── sections/               # Hero، Stats، Subjects، Tools، AiSpotlight، Lessons، CtaPanel …
+│   ├── courses/                # CourseGrid، CourseCard، CourseDetail، LessonPlayer، LearnRedirect، InstructorProfile
+│   ├── flashcards/             # FlashcardsDeck + FlashcardsShell
+│   ├── library/                # BooksGrid
+│   ├── contact/                # ContactForm
+│   ├── auth/                   # AuthForm (ورود/ثبت‌نام + انتخاب نقش)
+│   ├── onboarding/             # GetStartedWizard
+│   ├── dashboard/              # DashboardApp، پنل‌های استاد/شاگرد، CourseEditor، ProfilePanel
+│   ├── providers/              # ThemeProvider
+│   ├── shared/                 # PageHeader، پالت کارت‌ها
+│   └── ui/                     # shadcn (button, navigation-menu)
+├── lib/
+│   ├── locales.ts              # ثابت‌ها/تایپ‌های امن کلاینت (Locale، Dictionary)
+│   ├── i18n.ts                 # توابع سروری (getDictionary، getLocale)
+│   ├── types.ts                # Course، Module، Lesson، Enrollment، Submission، User …
+│   ├── courses.ts              # مدل دوره، ساخت دوره از موضوع، پیشرفت، اسلاگ، تاریخ
+│   ├── store.ts                # لایهٔ نمایشی localStorage (کاربر، دوره، ثبت‌نام، نمره، پیام، یادداشت)
+│   └── format.ts               # اعداد/تاریخ
+├── messages/                   # fa.json · ps.json · en.json
+└── style/globals.css           # توکن‌ها و کلاس‌های سراسری (Tailwind v4)
+```
+
+## امکانات (برابری با CodeMage + قابلیت‌های Coursera-like)
+
+| قابلیت | وضعیت |
+| --- | --- |
+| منوی مگا‌منو با زیرشاخه‌ها + صفحهٔ دربارهٔ ما | ✅ |
+| موضوع‌ها، فصل‌ها و درس‌ها (صفحهٔ اختصاصی هر موضوع) | ✅ |
+| فلش‌کارت تعاملی با پیشرفت ذخیره‌شده | ✅ |
+| دستیار هوش مصنوعی (صفحهٔ معرفی) | ✅ |
+| کتابخانهٔ مکتب و کتابخانهٔ عمومی | ✅ |
+| فورم‌ها و دانلود اپلیکیشن | ✅ |
+| درباره/تماس (پیام‌ها در داشبورد استاد) | ✅ |
+| ورود/ثبت‌نام با انتخاب نقش (استاد/شاگرد) | ✅ |
+| **داشبورد استاد:** نمای کلی، دوره‌های من، شاگردان، ارزیابی، پیام‌ها، تنظیمات | ✅ |
+| **داشبورد شاگرد:** نمای کلی، دوره‌های من، کاتالوگ، تمرین‌های من، گواهینامه‌ها، تنظیمات | ✅ |
+| ساخت دوره توسط استاد (عنوان، دسته، سطح، قیمت، خروجی‌ها، فصل‌ها، درس‌ها، تمرین‌ها) | ✅ |
+| انتشار/لغو انتشار دوره + نمایش فوری در سایت | ✅ |
+| ثبت‌نام شاگرد در هر دورهٔ منتشرشده | ✅ |
+| فضای یادگیری با پیشرفت، یادداشت و درس بعدی/قبلی | ✅ |
+| تمرین با پاسخ متنی + ارزیابی و بازخورد استاد | ✅ |
+| گواهینامهٔ پایان دوره در داشبورد شاگرد | ✅ |
+| پروفایل عمومی استاد + فهرست دوره‌های منتشرشده | ✅ |
+| جست‌وجو در دوره‌ها و کاتالوگ شاگرد | ✅ |
+| سه زبان (fa/ps/en) + حالت تاریک | ✅ |
+| برنامه‌ریز مطالعهٔ سه‌مرحله‌ای | ✅ (افزودهٔ ما) |
+| صفحهٔ ۴۰۴ سفارشی، sitemap و robots | ✅ |
+
+## جریان نقش‌محور
+
+1. **استاد** ثبت‌نام می‌کند (یا با حساب نمایشی وارد می‌شود) → از «دوره‌های من» دوره می‌سازد → فصل و درس اضافه می‌کند → انتشار می‌دهد.
+2. دورهٔ منتشرشده در `/school` و کاتالوگ شاگرد دیده می‌شود و صفحهٔ اختصاصی `/school/[slug]` دارد.
+3. **شاگرد** ثبت‌نام می‌کند → در دوره ثبت‌نام می‌کند → از `/learn/[slug]/[lessonId]` درس‌ها را می‌خواند و پیشرفت ذخیره می‌شود.
+4. شاگرد پاسخ تمرین را ارسال می‌کند؛ استاد در بخش «ارزیابی» نمره و بازخورد می‌دهد و شاگرد نتیجه را در «تمرین‌های من» می‌بیند.
+5. با تکمیل همهٔ درس‌ها، گواهینامهٔ دوره در داشبورد شاگرد فعال می‌شود.
+
+## داده‌ها (نسخهٔ نمایشی)
+
+- دوره‌ها: `localStorage["abzar-courses"]`
+- ثبت‌نام‌ها: `localStorage["abzar-enrollments"]`
+- پاسخ تمرین‌ها: `localStorage["abzar-submissions"]`
+- کاربران: `localStorage["abzar-users"]` و نشست: `localStorage["abzar-user"]`
+- پیام‌های تماس: `localStorage["abzar-messages"]`
+- یادداشت درس: `localStorage["abzar-notes-<userId>"]`
+- برنامهٔ مطالعه: `localStorage["abzar-plan"]`
+- داده‌های نمونه: `localStorage["abzar-demo-seeded"]`
+
+داده‌های نمونه (استاد/شاگرد نمایشی، دو دوره، یک ثبت‌نام، یک تمرین و یک پیام) در اولین بازدید از `/login` یا `/dashboard` ساخته می‌شوند. برای اتصال به بک‌اند واقعی، فقط توابع `src/lib/store.ts` و تایپ‌های `src/lib/types.ts` باید جایگزین شوند.
+
+> محتوای دوره‌هایی که استاد می‌سازد «دادهٔ کاربر» است و به‌صورت یک‌زبانه ذخیره می‌شود؛ برچسب‌ها و متن‌های خود سایت همچنان از سه فایل `messages` می‌آیند.
+
+## طراحی
+
+جهت هنری بر اساس سایت **CodeMage**: پنل‌های تیرهٔ سرمه‌ای با گرادیان بنفش/سبز نعنایی، کارت‌های پاستلی، تایپوگرافی Vazirmatn، شعاع‌های بزرگ و ریتم بخش‌های روشن/تیره. طراحی صفحه‌های جدید (دوره، فضای یادگیری، داشبورد) با همان توکن‌ها و کلاس‌های `soft-card` / `hero-panel` / `subject-art` ادامه پیدا کرده است. راهنمای کامل در `docs/design-guide-fa.md` و توضیح نقش‌ها در `docs/coursera-features-fa.md`.
+
+## نکات باقی‌مانده
+
+- لینک فروشگاه‌های اپلیکیشن (Google Play / App Store) هنوز واقعی نیست؛ در `/download` به‌صورت «به‌زودی» نمایش داده می‌شود.
+- احراز هویت و ذخیره‌سازی داده‌ها نمایشی (localStorage) است؛ برای محیط واقعی باید به بک‌اند/دیتابیس وصل شود.
+- آپلود مستقیم ویدیو پیاده نشده؛ استاد می‌تواند لینک ویدیو را در درس ثبت کند.
+- فایل‌های تصویری قدیمی در `public/` (مثل `background.jpg` با ۳۴ مگابایت) دیگر استفاده نمی‌شوند و می‌توانند حذف شوند.
