@@ -1,4 +1,4 @@
-import type { Locale } from "./i18n";
+import type { Locale } from "./locales";
 
 const numberLocales: Record<Locale, string> = {
   fa: "fa-IR",

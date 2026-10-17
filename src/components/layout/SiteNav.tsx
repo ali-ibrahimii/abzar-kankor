@@ -7,8 +7,10 @@ import {
   BookOpen,
   Bot,
   ClipboardList,
+  Download,
   GraduationCap,
-  House,
+  Info,
+  LayoutDashboard,
   Library,
   Mail,
   NotebookPen,
@@ -49,13 +51,6 @@ export default function SiteNav({ nav, menus, subjects }: NavProps) {
   return (
     <NavigationMenu aria-label={nav.menu}>
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <Link href="/" className={linkClass("/")}>
-            <House size={15} className="opacity-70" />
-            {nav.home}
-          </Link>
-        </NavigationMenuItem>
-
         <NavigationMenuItem>
           <NavigationMenuTrigger>{nav.school}</NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -153,10 +148,33 @@ export default function SiteNav({ nav, menus, subjects }: NavProps) {
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <Link href="/contact" className={linkClass("/contact")}>
-            <Mail size={15} className="opacity-70" />
-            {nav.contact}
+          <Link href="/about" className={linkClass("/about")}>
+            <Info size={15} className="opacity-70" />
+            {nav.about}
           </Link>
+        </NavigationMenuItem>
+
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>{nav.more}</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <div className="grid w-[280px] gap-1 p-1">
+              {[
+                { href: "/contact", label: nav.contact, Icon: Mail },
+                { href: "/download", label: nav.download, Icon: Download },
+                { href: "/forms", label: menus.school.items.forms.title, Icon: ClipboardList },
+                { href: "/dashboard", label: nav.dashboard, Icon: LayoutDashboard },
+              ].map(({ href, label, Icon }) => (
+                <NavigationMenuLink asChild key={href}>
+                  <Link href={href} className="flex-row items-center gap-2">
+                    <span className="flex size-8 items-center justify-center rounded-xl bg-muted text-primary">
+                      <Icon size={15} />
+                    </span>
+                    <span className="text-sm font-bold text-foreground">{label}</span>
+                  </Link>
+                </NavigationMenuLink>
+              ))}
+            </div>
+          </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

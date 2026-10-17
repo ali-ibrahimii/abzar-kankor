@@ -27,7 +27,7 @@ export default async function RegisterPage() {
             <UserRoundPlus size={26} />
           </span>
         </div>
-        <AuthForm mode="register" labels={auth} />
+        <AuthForm mode="register" labels={auth} demo={m.demo} />
       </div>
     </div>
   );

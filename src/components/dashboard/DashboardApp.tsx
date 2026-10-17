@@ -1,632 +1,487 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import {
-  ArrowUpLeft,
+  Award,
   BookOpen,
-  ChevronLeft,
+  ClipboardCheck,
+  Compass,
   GraduationCap,
   LayoutDashboard,
-  Library,
   LogIn,
   LogOut,
   Mail,
-  MessageSquare,
   NotebookPen,
-  Pencil,
-  Plus,
-  RotateCcw,
-  Save,
-  Search,
+  Presentation,
   Settings2,
-  Trash2,
-  User,
-  X,
+  UserRoundPlus,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
+import { Badge } from "./DashboardUi";
+import CourseEditor from "./CourseEditor";
+import ProfilePanel from "./ProfilePanel";
+import {
+  StudentAssignments,
+  StudentCatalog,
+  StudentCertificates,
+  StudentCourses,
+  StudentOverview,
+} from "./StudentPanels";
+import {
+  TeacherCourses,
+  TeacherGrading,
+  TeacherMessages,
+  TeacherOverview,
+  TeacherStudents,
+} from "./TeacherPanels";
+import { makeId } from "@/lib/courses";
 import type { Dictionary, Locale, LocaleOption } from "@/lib/locales";
-import type { Book, ContactMessage, Flashcard, Lesson, Subject } from "@/lib/types";
+import type { Course, DemoSeed, Role } from "@/lib/types";
+import {
+  ensureDemoData,
+  getCourses,
+  getCurrentUser,
+  loginUser,
+  logoutUser,
+  saveCourse,
+  updateUser,
+  useStoreVersion,
+} from "@/lib/store";
 
-export type DashboardContent = {
-  subjects: Subject[];
-  lessons: Lesson[];
-  cards: Flashcard[];
-  books: Book[];
-};
-
-type Section = "overview" | "subjects" | "lessons" | "flashcards" | "books" | "messages" | "settings";
-type Row = Record<string, unknown> & { id: string };
-
-const CONTENT_KEY = "abzar-content";
-const MESSAGES_KEY = "abzar-messages";
-const USER_KEY = "abzar-user";
-
-const sectionIcons = {
-  overview: LayoutDashboard,
-  subjects: GraduationCap,
-  lessons: BookOpen,
-  flashcards: NotebookPen,
-  books: Library,
-  messages: Mail,
-  settings: Settings2,
-};
-
-function withIds<T extends object>(items: T[], prefix: string): Row[] {
-  return items.map((item, index) => ({ ...item, id: `${prefix}-${index}` }));
-}
-
-function fieldsFor(section: Section) {
-  if (section === "subjects") return ["title", "description", "level"];
-  if (section === "lessons") return ["title", "subjectSlug", "summary", "minutes"];
-  if (section === "flashcards") return ["subjectSlug", "question", "answer"];
-  if (section === "books") return ["title", "author", "description", "pages"];
-  return [];
-}
+type TeacherSection = "overview" | "courses" | "students" | "grading" | "messages" | "settings";
+type StudentSection = "overview" | "courses" | "catalog" | "assignments" | "certificates" | "settings";
+type Section = TeacherSection | StudentSection;
 
 export default function DashboardApp({
   labels,
   common,
   locale,
-  initial,
   languageOptions,
+  demo,
+  seedCourses,
 }: {
   labels: Dictionary["dashboard"];
   common: Dictionary["common"];
   locale: Locale;
-  initial: DashboardContent;
   languageOptions: LocaleOption[];
+  demo: DemoSeed;
+  seedCourses: Course[];
 }) {
+  useStoreVersion();
+  const [mounted, setMounted] = useState(false);
   const [section, setSection] = useState<Section>("overview");
-  const [content, setContent] = useState<DashboardContent>(initial);
-  const [messages, setMessages] = useState<ContactMessage[]>([]);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
-  const [query, setQuery] = useState("");
-  const [editing, setEditing] = useState<Row | null>(null);
-  const [draft, setDraft] = useState<Record<string, string>>({});
-  const [notice, setNotice] = useState("");
+  const [editing, setEditing] = useState<{ course: Course; isNew: boolean } | null>(null);
+  const [toast, setToast] = useState("");
 
   useEffect(() => {
-    try {
-      const storedContent = window.localStorage.getItem(CONTENT_KEY);
-      if (storedContent) setContent(JSON.parse(storedContent) as DashboardContent);
-      const storedMessages = window.localStorage.getItem(MESSAGES_KEY);
-      if (storedMessages) setMessages(JSON.parse(storedMessages) as ContactMessage[]);
-      const storedUser = window.localStorage.getItem(USER_KEY);
-      if (storedUser) setUser(JSON.parse(storedUser) as { name: string; email: string });
-    } catch {
-      /* ignore corrupted storage */
-    }
-  }, []);
+    ensureDemoData(demo);
+    setMounted(true);
+  }, [demo]);
 
-  function persist(next: DashboardContent) {
-    setContent(next);
-    window.localStorage.setItem(CONTENT_KEY, JSON.stringify(next));
-    setNotice(labels.noticeSaved);
-    setTimeout(() => setNotice(""), 1800);
-  }
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(""), 2400);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
-  const rows: Row[] = useMemo(() => {
-    if (section === "subjects") return withIds(content.subjects, "subject");
-    if (section === "lessons") return withIds(content.lessons, "lesson");
-    if (section === "flashcards") return withIds(content.cards, "card");
-    if (section === "books") return withIds(content.books, "book");
-    return [];
-  }, [content, section]);
+  const user = getCurrentUser();
+  const courses = getCourses();
 
-  const filtered = useMemo(() => {
-    const value = query.trim().toLowerCase();
-    if (!value) return rows;
-    return rows.filter((row) =>
-      JSON.stringify(row).toLowerCase().includes(value),
+  if (!mounted) {
+    return (
+      <div className="page-container py-16">
+        <div className="soft-card mx-auto max-w-xl p-10 text-center text-sm text-muted-foreground">
+          {common.loading}
+        </div>
+      </div>
     );
-  }, [query, rows]);
-
-  function startAdd() {
-    const base: Record<string, string> = {};
-    fieldsFor(section).forEach((field) => (base[field] = ""));
-    setDraft(base);
-    setEditing({ id: "new" });
   }
 
-  function startEdit(row: Row) {
-    const next: Record<string, string> = {};
-    fieldsFor(section).forEach((field) => (next[field] = String(row[field] ?? "")));
-    setDraft(next);
-    setEditing(row);
+  if (!user) {
+    return (
+      <div className="page-container py-12 sm:py-16">
+        <div className="soft-card mx-auto max-w-2xl overflow-hidden">
+          <div className="hero-panel p-7 sm:p-10">
+            <span className="flex size-12 items-center justify-center rounded-2xl bg-white/10 text-[#b7f486]">
+              <LayoutDashboard size={24} />
+            </span>
+            <h1 className="mt-5 text-2xl font-black text-white sm:text-3xl">{labels.signedOut.title}</h1>
+            <p className="mt-2 max-w-lg text-sm leading-7 text-white/60">{labels.signedOut.copy}</p>
+          </div>
+          <div className="p-6 sm:p-8">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button asChild className="flex-1">
+                <Link href="/login">
+                  <LogIn size={16} /> {labels.signedOut.login}
+                </Link>
+              </Button>
+              <Button variant="secondary" asChild className="flex-1">
+                <Link href="/register">
+                  <UserRoundPlus size={16} /> {labels.signedOut.register}
+                </Link>
+              </Button>
+            </div>
+            <div className="mt-6 rounded-2xl border border-border/70 bg-muted/30 p-4">
+              <p className="text-[10px] font-black text-muted-foreground">{labels.demoBadge}</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <Button
+                  variant="dark"
+                  onClick={() => {
+                    ensureDemoData(demo);
+                    loginUser(demo.credentials.teacherEmail, demo.credentials.password);
+                    setSection("overview");
+                  }}
+                >
+                  <Presentation size={16} /> {labels.teacher.title}
+                </Button>
+                <Button
+                  variant="mint"
+                  onClick={() => {
+                    ensureDemoData(demo);
+                    loginUser(demo.credentials.studentEmail, demo.credentials.password);
+                    setSection("overview");
+                  }}
+                >
+                  <GraduationCap size={16} /> {labels.student.title}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  function saveDraft() {
-    if (!editing) return;
+  const isTeacher = user.role === "teacher";
+  const teacherNav: { id: TeacherSection; label: string; icon: LucideIcon }[] = [
+    { id: "overview", label: labels.teacher.nav.overview, icon: LayoutDashboard },
+    { id: "courses", label: labels.teacher.nav.courses, icon: GraduationCap },
+    { id: "students", label: labels.teacher.nav.students, icon: Users },
+    { id: "grading", label: labels.teacher.nav.grading, icon: ClipboardCheck },
+    { id: "messages", label: labels.teacher.nav.messages, icon: Mail },
+    { id: "settings", label: labels.teacher.nav.settings, icon: Settings2 },
+  ];
+  const studentNav: { id: StudentSection; label: string; icon: LucideIcon }[] = [
+    { id: "overview", label: labels.student.nav.overview, icon: LayoutDashboard },
+    { id: "courses", label: labels.student.nav.courses, icon: BookOpen },
+    { id: "catalog", label: labels.student.nav.catalog, icon: Compass },
+    { id: "assignments", label: labels.student.nav.assignments, icon: NotebookPen },
+    { id: "certificates", label: labels.student.nav.certificates, icon: Award },
+    { id: "settings", label: labels.student.nav.settings, icon: Settings2 },
+  ];
+  const navItems = isTeacher ? teacherNav : studentNav;
+  const activeSection = navItems.some((item) => item.id === section) ? section : "overview";
 
-    if (section === "subjects") {
-      const list = [...content.subjects];
-      const item = {
-        ...(editing.id === "new"
-          ? {
-              slug: `subject-${Date.now()}`,
-              icon: "BookOpen",
-              color: "violet",
-              lessons: 0,
-              chapters: 0,
-              chapterList: [],
-            }
-          : list.find((_, index) => `subject-${index}` === editing.id) ?? list[0]),
-        title: draft.title || "—",
-        description: draft.description || "",
-        level: draft.level || "",
-      } as Subject;
-      const index = list.findIndex((_, i) => `subject-${i}` === editing.id);
-      if (index >= 0) list[index] = item;
-      else list.push(item);
-      persist({ ...content, subjects: list });
+  function previewAs(role: Role) {
+    if (!user) return;
+    const isDemoAccount =
+      user.email.toLowerCase() === demo.credentials.teacherEmail.toLowerCase() ||
+      user.email.toLowerCase() === demo.credentials.studentEmail.toLowerCase();
+    if (isDemoAccount) {
+      const email =
+        role === "teacher" ? demo.credentials.teacherEmail : demo.credentials.studentEmail;
+      loginUser(email, demo.credentials.password);
+    } else {
+      updateUser({ role });
     }
-
-    if (section === "lessons") {
-      const list = [...content.lessons];
-      const index = list.findIndex((_, i) => `lesson-${i}` === editing.id);
-      const subject = content.subjects.find((s) => s.slug === draft.subjectSlug);
-      const item = {
-        ...(index >= 0 ? list[index] : { slug: `lesson-${Date.now()}`, color: "violet", icon: "BookOpen" }),
-        title: draft.title || "—",
-        summary: draft.summary || "",
-        subjectSlug: subject?.slug ?? content.subjects[0]?.slug ?? "math",
-        subject: subject?.title ?? "—",
-        minutes: Number(draft.minutes) || 20,
-      } as Lesson;
-      if (index >= 0) list[index] = item;
-      else list.push(item);
-      persist({ ...content, lessons: list });
-    }
-
-    if (section === "flashcards") {
-      const list = [...content.cards];
-      const index = list.findIndex((_, i) => `card-${i}` === editing.id);
-      const subject = content.subjects.find((s) => s.slug === draft.subjectSlug);
-      const item = {
-        ...(index >= 0 ? list[index] : { accent: "#7c5cda" }),
-        subjectSlug: subject?.slug ?? content.subjects[0]?.slug ?? "math",
-        subject: subject?.title ?? "—",
-        question: draft.question || "—",
-        answer: draft.answer || "",
-      } as Flashcard;
-      if (index >= 0) list[index] = item;
-      else list.push(item);
-      persist({ ...content, cards: list });
-    }
-
-    if (section === "books") {
-      const list = [...content.books];
-      const index = list.findIndex((_, i) => `book-${i}` === editing.id);
-      const item = {
-        ...(index >= 0 ? list[index] : { color: "violet", kind: "school" }),
-        title: draft.title || "—",
-        author: draft.author || "",
-        description: draft.description || "",
-        pages: Number(draft.pages) || 100,
-      } as Book;
-      if (index >= 0) list[index] = item;
-      else list.push(item);
-      persist({ ...content, books: list });
-    }
-
+    setSection("overview");
     setEditing(null);
   }
 
-  function removeRow(row: Row) {
-    if (!window.confirm(labels.table.confirmDelete)) return;
-    if (section === "subjects") {
-      persist({ ...content, subjects: content.subjects.filter((_, i) => `subject-${i}` !== row.id) });
-    }
-    if (section === "lessons") {
-      persist({ ...content, lessons: content.lessons.filter((_, i) => `lesson-${i}` !== row.id) });
-    }
-    if (section === "flashcards") {
-      persist({ ...content, cards: content.cards.filter((_, i) => `card-${i}` !== row.id) });
-    }
-    if (section === "books") {
-      persist({ ...content, books: content.books.filter((_, i) => `book-${i}` !== row.id) });
-    }
-    setNotice(labels.noticeDeleted);
-    setTimeout(() => setNotice(""), 1800);
+  function newCourse(): Course {
+    const stamp = new Date().toISOString();
+    return {
+      id: makeId("c"),
+      slug: "",
+      title: "",
+      description: "",
+      category: "",
+      level: "",
+      color: "violet",
+      icon: "BookOpen",
+      price: 0,
+      status: "draft",
+      instructorId: user!.id,
+      instructorName: user!.name,
+      instructorTitle: user!.headline,
+      outcomes: [],
+      requirements: [],
+      modules: [],
+      assignments: [],
+      seed: false,
+      createdAt: stamp,
+      updatedAt: stamp,
+    };
   }
-
-  function removeMessage(id: string) {
-    const next = messages.filter((item) => item.id !== id);
-    setMessages(next);
-    window.localStorage.setItem(MESSAGES_KEY, JSON.stringify(next));
-  }
-
-  function logout() {
-    window.localStorage.removeItem(USER_KEY);
-    setUser(null);
-    window.dispatchEvent(new Event("abzar-user-change"));
-  }
-
-  function resetAll() {
-    window.localStorage.removeItem(CONTENT_KEY);
-    setContent(initial);
-    setNotice(labels.settings.resetDone);
-    setTimeout(() => setNotice(""), 1800);
-  }
-
-  const counts = {
-    subjects: content.subjects.length,
-    lessons: content.lessons.length,
-    cards: content.cards.length,
-    books: content.books.length,
-    messages: messages.length,
-  };
-
-  const fieldLabels: Record<string, string> = {
-    title: labels.forms.title,
-    description: labels.forms.description,
-    level: labels.forms.level,
-    subjectSlug: labels.forms.subject,
-    summary: labels.forms.description,
-    minutes: labels.forms.minutes,
-    question: labels.forms.question,
-    answer: labels.forms.answer,
-    author: labels.forms.author,
-    pages: labels.forms.pages,
-  };
 
   return (
     <div className="page-container py-8 sm:py-10">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="mb-6 flex flex-col justify-between gap-4 xl:flex-row xl:items-end">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            {labels.title}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">
+              {isTeacher ? labels.teacher.title : labels.student.title}
+            </span>
+            <Badge tone="warn">{labels.demoBadge}</Badge>
+          </div>
+          <h1 className="mt-1.5 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
+            {labels.welcome}{locale === "en" ? ", " : "، "}{user.name}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">{labels.subtitle}</p>
+          <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+            {isTeacher ? labels.teacher.subtitle : labels.student.subtitle}
+          </p>
         </div>
+
         <div className="flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-3 py-2 text-xs font-bold text-muted-foreground">
-            <User size={14} />
-            {user?.name || labels.guest}
-          </span>
-          {user ? (
-            <Button variant="secondary" size="sm" onClick={logout}>
-              <LogOut size={14} />
-              {labels.logout}
-            </Button>
-          ) : (
-            <Button variant="secondary" size="sm" asChild>
-              <Link href="/login">
-                <LogIn size={14} />
-                {labels.login}
-              </Link>
-            </Button>
-          )}
-          <Button variant="dark" size="sm" asChild>
-            <Link href="/">
-              <ArrowUpLeft size={14} />
-              {common.home}
-            </Link>
+          <span className="text-[10px] font-black text-muted-foreground">{labels.roleSwitch}</span>
+          <div className="flex rounded-2xl border border-border/80 bg-muted/40 p-1">
+            {(["teacher", "student"] as const).map((role) => {
+              const active = user.role === role;
+              const Icon = role === "teacher" ? Presentation : GraduationCap;
+              return (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => previewAs(role)}
+                  aria-pressed={active}
+                  className={[
+                    "flex items-center gap-1.5 rounded-xl px-3 py-2 text-[11px] font-black transition",
+                    active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                  ].join(" ")}
+                >
+                  <Icon size={14} />
+                  {role === "teacher" ? labels.role.teacher : labels.role.student}
+                </button>
+              );
+            })}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              logoutUser();
+              setSection("overview");
+            }}
+          >
+            <LogOut size={15} /> {labels.logout}
           </Button>
         </div>
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start">
-        <aside className="soft-card p-2">
-          <nav className="grid gap-1" aria-label={labels.title}>
-            {(Object.keys(labels.sections) as Section[]).map((key) => {
-              const Icon = sectionIcons[key];
-              const active = key === section;
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => {
-                    setSection(key);
-                    setEditing(null);
-                    setQuery("");
-                  }}
-                  aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-3 rounded-2xl px-3.5 py-3 text-start text-sm font-bold transition ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  }`}
-                >
-                  <Icon size={17} />
-                  {labels.sections[key]}
-                  {key !== "overview" && key !== "settings" ? (
-                    <span
-                      className={`ms-auto rounded-full px-2 py-0.5 text-[10px] font-black ${
-                        active ? "bg-white/20" : "bg-muted text-muted-foreground"
-                      }`}
-                    >
-                      {counts[key as keyof typeof counts]}
-                    </span>
-                  ) : null}
-                </button>
-              );
-            })}
-          </nav>
+      <div className="grid gap-5 lg:grid-cols-[250px_minmax(0,1fr)] lg:items-start">
+        <aside className="hidden lg:sticky lg:top-24 lg:block">
+          <div className="soft-card p-3">
+            <div className="rounded-2xl bg-gradient-to-br from-[#17233a] to-[#222340] p-4 text-white">
+              <span className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[#725bff] to-[#36c6ab] text-base font-black">
+                {user.name.charAt(0)}
+              </span>
+              <p className="mt-3 truncate text-sm font-black">{user.name}</p>
+              <p className="mt-0.5 truncate text-[10px] text-white/50" dir="ltr">
+                {user.email}
+              </p>
+              <span className="mt-2 inline-flex rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-black text-[#b7f486]">
+                {isTeacher ? labels.role.teacher : labels.role.student}
+              </span>
+            </div>
+
+            <nav className="mt-3 grid gap-1" aria-label={isTeacher ? labels.teacher.title : labels.student.title}>
+              {navItems.map((item) => {
+                const active = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSection(item.id)}
+                    aria-current={active ? "page" : undefined}
+                    className={[
+                      "flex min-h-11 items-center gap-2.5 rounded-xl px-3 text-xs font-black transition",
+                      active
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    ].join(" ")}
+                  >
+                    <item.icon size={16} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="mt-3 border-t border-border/70 pt-3">
+              <Link
+                href="/"
+                className="flex min-h-10 items-center gap-2 rounded-xl px-3 text-[11px] font-bold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              >
+                <Compass size={14} /> {labels.backToSite}
+              </Link>
+            </div>
+          </div>
         </aside>
 
         <div className="min-w-0">
-          {notice ? (
-            <div
-              className="mb-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300"
-              role="status"
+          <div className="mb-4 lg:hidden">
+            <div className="soft-card flex items-center gap-3 p-3">
+              <span className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#725bff] to-[#36c6ab] text-sm font-black text-white">
+                {user.name.charAt(0)}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-black text-foreground">{user.name}</span>
+                <span className="block text-[10px] text-muted-foreground">
+                  {isTeacher ? labels.role.teacher : labels.role.student}
+                </span>
+              </span>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/">{labels.backToSite}</Link>
+              </Button>
+            </div>
+            <nav
+              className="mt-2 flex gap-1.5 overflow-x-auto pb-1"
+              aria-label={isTeacher ? labels.teacher.title : labels.student.title}
             >
-              {notice}
-            </div>
+              {navItems.map((item) => {
+                const active = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setSection(item.id)}
+                    className={[
+                      "inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-3 py-2 text-[11px] font-black transition",
+                      active
+                        ? "border-primary/30 bg-primary/10 text-primary"
+                        : "border-border/70 bg-card text-muted-foreground",
+                    ].join(" ")}
+                  >
+                    <item.icon size={14} />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {isTeacher && activeSection === "overview" ? (
+            <TeacherOverview
+              labels={labels}
+              locale={locale}
+              user={user}
+              courses={courses}
+              onNavigate={(next) => setSection(next as TeacherSection)}
+              onCreate={() => setEditing({ course: newCourse(), isNew: true })}
+            />
+          ) : null}
+          {isTeacher && activeSection === "courses" ? (
+            <TeacherCourses
+              labels={labels}
+              locale={locale}
+              user={user}
+              courses={courses}
+              onCreate={() => setEditing({ course: newCourse(), isNew: true })}
+              onEdit={(course) => setEditing({ course, isNew: false })}
+              notify={setToast}
+            />
+          ) : null}
+          {isTeacher && activeSection === "students" ? (
+            <TeacherStudents labels={labels} locale={locale} user={user} courses={courses} />
+          ) : null}
+          {isTeacher && activeSection === "grading" ? (
+            <TeacherGrading labels={labels} locale={locale} user={user} courses={courses} notify={setToast} />
+          ) : null}
+          {isTeacher && activeSection === "messages" ? (
+            <TeacherMessages labels={labels} locale={locale} notify={setToast} />
           ) : null}
 
-          {section === "overview" ? (
-            <div className="space-y-6">
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                {(["subjects", "lessons", "cards", "books"] as const).map((key) => (
-                  <div key={key} className="soft-card p-5">
-                    <p className="text-3xl font-black text-foreground">{counts[key]}</p>
-                    <p className="mt-1 text-xs font-bold text-muted-foreground">
-                      {labels.stats[key]}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid gap-5 lg:grid-cols-2">
-                <div className="soft-card p-5">
-                  <h2 className="text-sm font-black text-foreground">{labels.overview.recent}</h2>
-                  <ul className="mt-3 space-y-2">
-                    {content.lessons.slice(0, 4).map((lesson) => (
-                      <li
-                        key={lesson.slug}
-                        className="flex items-center justify-between gap-3 rounded-xl bg-muted/60 px-3 py-2.5"
-                      >
-                        <span className="min-w-0 truncate text-xs font-bold text-foreground">
-                          {lesson.title}
-                        </span>
-                        <span className="shrink-0 text-[10px] text-muted-foreground">
-                          {lesson.subject}
-                        </span>
-                      </li>
-                    ))}
-                    {content.lessons.length === 0 ? (
-                      <li className="text-xs text-muted-foreground">{labels.table.empty}</li>
-                    ) : null}
-                  </ul>
-                </div>
-
-                <div className="soft-card p-5">
-                  <h2 className="text-sm font-black text-foreground">{labels.overview.quick}</h2>
-                  <div className="mt-3 grid gap-2">
-                    {(
-                      [
-                        ["lessons", Plus, labels.overview.quickItems[0]],
-                        ["flashcards", NotebookPen, labels.overview.quickItems[1]],
-                        ["messages", MessageSquare, labels.overview.quickItems[2]],
-                      ] as const
-                    ).map(([key, Icon, text]) => (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setSection(key as Section)}
-                        className="flex items-center gap-3 rounded-xl border border-border px-3 py-2.5 text-start text-xs font-bold text-muted-foreground transition hover:border-primary/30 hover:text-primary"
-                      >
-                        <Icon size={15} />
-                        {text}
-                        <ChevronLeft size={14} className="ms-auto rtl:rotate-180" />
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-4 text-[11px] leading-5 text-muted-foreground/80">
-                    {labels.overview.tip}
-                  </p>
-                </div>
-              </div>
-            </div>
+          {!isTeacher && activeSection === "overview" ? (
+            <StudentOverview
+              labels={labels}
+              locale={locale}
+              user={user}
+              courses={courses}
+              seedCourses={seedCourses}
+              onNavigate={(next) => setSection(next as StudentSection)}
+            />
+          ) : null}
+          {!isTeacher && activeSection === "courses" ? (
+            <StudentCourses
+              labels={labels}
+              locale={locale}
+              user={user}
+              courses={courses}
+              seedCourses={seedCourses}
+              onNavigate={(next) => setSection(next as StudentSection)}
+            />
+          ) : null}
+          {!isTeacher && activeSection === "catalog" ? (
+            <StudentCatalog
+              labels={labels}
+              common={common}
+              locale={locale}
+              user={user}
+              courses={courses}
+              seedCourses={seedCourses}
+              notify={setToast}
+            />
+          ) : null}
+          {!isTeacher && activeSection === "assignments" ? (
+            <StudentAssignments
+              labels={labels}
+              locale={locale}
+              user={user}
+              courses={courses}
+              seedCourses={seedCourses}
+              notify={setToast}
+            />
+          ) : null}
+          {!isTeacher && activeSection === "certificates" ? (
+            <StudentCertificates
+              labels={labels}
+              locale={locale}
+              user={user}
+              courses={courses}
+              seedCourses={seedCourses}
+            />
           ) : null}
 
-          {section === "messages" ? (
-            <div className="soft-card p-5">
-              <h2 className="text-sm font-black text-foreground">{labels.messages.title}</h2>
-              {messages.length === 0 ? (
-                <p className="mt-4 text-sm text-muted-foreground">{labels.messages.empty}</p>
-              ) : (
-                <ul className="mt-4 space-y-3">
-                  {messages.map((message) => (
-                    <li key={message.id} className="rounded-2xl border border-border p-4">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <span className="text-xs font-black text-foreground">
-                          {message.name} <span className="font-medium text-muted-foreground">— {message.email}</span>
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeMessage(message.id)}
-                          aria-label={labels.messages.delete}
-                          className="flex size-8 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                      <p className="mt-2 text-sm leading-6 text-muted-foreground">{message.message}</p>
-                      <p className="mt-2 text-[10px] text-muted-foreground/70" dir="ltr">
-                        {new Date(message.createdAt).toLocaleString("en-GB")}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ) : null}
-
-          {section === "settings" ? (
-            <div className="soft-card p-5">
-              <h2 className="text-sm font-black text-foreground">{labels.settings.title}</h2>
-
-              <div className="mt-5">
-                <p className="text-xs font-bold text-muted-foreground">{labels.settings.language}</p>
-                <p className="mb-3 mt-1 text-[11px] text-muted-foreground/80">
-                  {labels.settings.languageHint}
-                </p>
-                <LanguageSwitcher locale={locale} label={labels.settings.language} options={languageOptions} variant="buttons" />
-              </div>
-
-              <div className="mt-6 border-t border-border pt-5">
-                <p className="text-xs font-bold text-muted-foreground">{labels.settings.data}</p>
-                <p className="mb-3 mt-1 text-[11px] text-muted-foreground/80">
-                  {labels.settings.resetHint}
-                </p>
-                <Button variant="destructive" size="sm" onClick={resetAll}>
-                  <RotateCcw size={14} />
-                  {labels.settings.reset}
-                </Button>
-              </div>
-            </div>
-          ) : null}
-
-          {["subjects", "lessons", "flashcards", "books"].includes(section) ? (
-            <div className="soft-card p-5">
-              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                <h2 className="text-sm font-black text-foreground">{labels.sections[section]}</h2>
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="relative">
-                    <Search
-                      size={14}
-                      className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                    />
-                    <input
-                      value={query}
-                      onChange={(event) => setQuery(event.target.value)}
-                      placeholder={labels.table.search}
-                      aria-label={labels.table.search}
-                      className="min-h-10 w-52 rounded-xl border border-border bg-background ps-9 pe-3 text-xs outline-none focus:border-primary/50"
-                    />
-                  </div>
-                  <Button size="sm" onClick={startAdd}>
-                    <Plus size={14} />
-                    {labels.table.add}
-                  </Button>
-                </div>
-              </div>
-
-              {editing ? (
-                <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/[0.03] p-4">
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {fieldsFor(section).map((field) => (
-                      <div key={field} className={field === "description" || field === "summary" || field === "question" || field === "answer" ? "sm:col-span-2" : ""}>
-                        <label className="field-label text-xs" htmlFor={`field-${field}`}>
-                          {fieldLabels[field] ?? field}
-                        </label>
-                        {field === "subjectSlug" ? (
-                          <select
-                            id={`field-${field}`}
-                            className="field-input"
-                            value={draft[field] ?? ""}
-                            onChange={(event) =>
-                              setDraft((current) => ({ ...current, [field]: event.target.value }))
-                            }
-                          >
-                            {content.subjects.map((subject) => (
-                              <option key={subject.slug} value={subject.slug}>
-                                {subject.title}
-                              </option>
-                            ))}
-                          </select>
-                        ) : field === "description" || field === "summary" || field === "answer" ? (
-                          <textarea
-                            id={`field-${field}`}
-                            className="field-input min-h-20"
-                            value={draft[field] ?? ""}
-                            onChange={(event) =>
-                              setDraft((current) => ({ ...current, [field]: event.target.value }))
-                            }
-                          />
-                        ) : (
-                          <input
-                            id={`field-${field}`}
-                            className="field-input"
-                            type={field === "minutes" || field === "pages" ? "number" : "text"}
-                            value={draft[field] ?? ""}
-                            onChange={(event) =>
-                              setDraft((current) => ({ ...current, [field]: event.target.value }))
-                            }
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center gap-2">
-                    <Button size="sm" onClick={saveDraft}>
-                      <Save size={14} />
-                      {labels.table.save}
-                    </Button>
-                    <Button size="sm" variant="ghost" onClick={() => setEditing(null)}>
-                      <X size={14} />
-                      {labels.table.cancel}
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="mt-4 overflow-x-auto">
-                <table className="w-full min-w-[520px] border-collapse text-start">
-                  <thead>
-                    <tr className="border-b border-border text-[11px] font-black text-muted-foreground">
-                      <th className="px-2 py-2 text-start">{labels.table.title}</th>
-                      <th className="px-2 py-2 text-start">{labels.table.meta}</th>
-                      <th className="px-2 py-2 text-end">{labels.table.actions}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((row) => (
-                      <tr key={row.id} className="border-b border-border/60 text-sm">
-                        <td className="max-w-[280px] truncate px-2 py-3 font-bold text-foreground">
-                          {String(row.title ?? row.question ?? "—")}
-                        </td>
-                        <td className="max-w-[260px] truncate px-2 py-3 text-xs text-muted-foreground">
-                          {String(
-                            row.subject ??
-                              row.author ??
-                              row.level ??
-                              row.answer ??
-                              row.summary ??
-                              "",
-                          )}
-                        </td>
-                        <td className="px-2 py-3">
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              type="button"
-                              onClick={() => startEdit(row)}
-                              aria-label={labels.table.edit}
-                              className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-primary/10 hover:text-primary"
-                            >
-                              <Pencil size={14} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => removeRow(row)}
-                              aria-label={labels.table.delete}
-                              className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                    {filtered.length === 0 ? (
-                      <tr>
-                        <td colSpan={3} className="px-2 py-8 text-center text-sm text-muted-foreground">
-                          {labels.table.empty}
-                        </td>
-                      </tr>
-                    ) : null}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          {activeSection === "settings" ? (
+            <ProfilePanel
+              labels={labels}
+              locale={locale}
+              user={user}
+              languageOptions={languageOptions}
+              notify={setToast}
+            />
           ) : null}
         </div>
       </div>
+
+      {editing ? (
+        <CourseEditor
+          course={editing.course}
+          isNew={editing.isNew}
+          labels={labels.editor}
+          common={common}
+          locale={locale}
+          takenSlugs={courses.filter((course) => course.id !== editing.course.id).map((course) => course.slug)}
+          onClose={() => setEditing(null)}
+          onSave={(course) => {
+            saveCourse(course);
+            setEditing(null);
+            setToast(labels.editor.saved);
+          }}
+        />
+      ) : null}
+
+      {toast ? (
+        <div
+          className="fixed bottom-5 left-1/2 z-[80] w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-2xl bg-[#17233a] px-4 py-3 text-center text-xs font-bold text-white shadow-2xl"
+          role="status"
+        >
+          {toast}
+        </div>
+      ) : null}
     </div>
   );
 }
-

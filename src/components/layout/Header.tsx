@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -9,7 +9,9 @@ import {
   Download,
   GraduationCap,
   House,
+  Info,
   LayoutDashboard,
+  LogOut,
   Library,
   LogIn,
   Mail,
@@ -25,21 +27,36 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { useTheme } from "@/components/providers/ThemeProvider";
 import { Button } from "@/components/ui/button";
 import type { Dictionary, Locale, LocaleOption } from "@/lib/locales";
+import type { User } from "@/lib/types";
+import { getCurrentUser, logoutUser, STORE_EVENT } from "@/lib/store";
 
 type HeaderProps = {
   locale: Locale;
   nav: Dictionary["nav"];
+  roles: Dictionary["dashboard"]["role"];
   menus: Dictionary["menus"];
   site: Dictionary["site"];
   subjects: { slug: string; title: string }[];
   languageOptions: LocaleOption[];
 };
 
-export default function Header({ locale, nav, menus, site, subjects, languageOptions }: HeaderProps) {
+export default function Header({ locale, nav, roles, menus, site, subjects, languageOptions }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const sync = () => setUser(getCurrentUser());
+    sync();
+    window.addEventListener(STORE_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(STORE_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, []);
 
   const mobileLinks = [
     { href: "/", label: nav.home, icon: House },
@@ -48,6 +65,7 @@ export default function Header({ locale, nav, menus, site, subjects, languageOpt
     { href: "/ai-learning", label: nav.ai, icon: Bot },
     { href: "/library", label: nav.library, icon: Library },
     { href: "/forms", label: menus.school.items.forms.title, icon: ClipboardList },
+    { href: "/about", label: nav.about, icon: Info },
     { href: "/contact", label: nav.contact, icon: Mail },
   ];
 
@@ -102,18 +120,43 @@ export default function Header({ locale, nav, menus, site, subjects, languageOpt
             >
               {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
             </button>
-            <Button variant="secondary" size="sm" className="min-h-11" asChild>
-              <Link href="/login">
-                <LogIn size={15} />
-                {nav.login}
-              </Link>
-            </Button>
-            <Button variant="dark" size="sm" className="min-h-11" asChild>
-              <Link href="/register">
-                <UserRoundPlus size={15} />
-                {nav.register}
-              </Link>
-            </Button>
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="flex min-h-11 items-center gap-2 rounded-2xl border border-border/80 bg-card/70 px-3 text-xs font-black text-foreground transition hover:border-primary/30"
+                >
+                  <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-br from-[#725bff] to-[#36c6ab] text-[11px] font-black text-white">
+                    {user.name.trim().charAt(0)}
+                  </span>
+                  <span className="max-w-24 truncate">{user.name}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => logoutUser()}
+                  className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-card/70 text-muted-foreground transition hover:border-destructive/30 hover:text-destructive"
+                  aria-label={nav.logout}
+                  title={nav.logout}
+                >
+                  <LogOut size={17} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Button variant="secondary" size="sm" className="min-h-11" asChild>
+                  <Link href="/login">
+                    <LogIn size={15} />
+                    {nav.login}
+                  </Link>
+                </Button>
+                <Button variant="dark" size="sm" className="min-h-11" asChild>
+                  <Link href="/register">
+                    <UserRoundPlus size={15} />
+                    {nav.register}
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
 
           <div className="flex shrink-0 items-center gap-2 xl:hidden">
@@ -171,27 +214,57 @@ export default function Header({ locale, nav, menus, site, subjects, languageOpt
             </nav>
 
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <Button variant="secondary" asChild>
-                <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <LogIn size={15} />
-                  {nav.login}
-                </Link>
-              </Button>
-              <Button variant="dark" asChild>
-                <Link href="/register" onClick={() => setIsOpen(false)}>
-                  <UserRoundPlus size={15} />
-                  {nav.register}
-                </Link>
-              </Button>
+              {user ? (
+                <>
+                  <div className="col-span-2 flex items-center gap-2 rounded-2xl border border-border/80 bg-card px-3 py-2.5">
+                    <span className="flex size-8 items-center justify-center rounded-full bg-gradient-to-br from-[#725bff] to-[#36c6ab] text-xs font-black text-white">
+                      {user.name.trim().charAt(0)}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-xs font-black text-foreground">{user.name}</span>
+                      <span className="block text-[10px] text-muted-foreground">
+                        {user.role === "teacher" ? roles.teacher : roles.student}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        logoutUser();
+                        setIsOpen(false);
+                      }}
+                      className="flex size-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-muted"
+                      aria-label={nav.logout}
+                    >
+                      <LogOut size={16} />
+                    </button>
+                  </div>
+                  <Button variant="secondary" className="col-span-2" asChild>
+                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                      <LayoutDashboard size={16} />
+                      {nav.dashboard}
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="secondary" asChild>
+                    <Link href="/login" onClick={() => setIsOpen(false)}>
+                      <LogIn size={15} />
+                      {nav.login}
+                    </Link>
+                  </Button>
+                  <Button variant="dark" asChild>
+                    <Link href="/register" onClick={() => setIsOpen(false)}>
+                      <UserRoundPlus size={15} />
+                      {nav.register}
+                    </Link>
+                  </Button>
+                </>
+              )}
               <Button variant="mint" className="col-span-2" asChild>
                 <Link href="/download" onClick={() => setIsOpen(false)}>
                   <Download size={16} />
                   {nav.download}
-                </Link>
-              </Button>
-              <Button variant="secondary" className="col-span-2" asChild>
-                <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                  {nav.dashboard}
                 </Link>
               </Button>
             </div>

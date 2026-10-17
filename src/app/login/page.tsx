@@ -27,7 +27,7 @@ export default async function LoginPage() {
             <LogIn size={26} />
           </span>
         </div>
-        <AuthForm mode="login" labels={auth} />
+        <AuthForm mode="login" labels={auth} demo={m.demo} />
       </div>
     </div>
   );

@@ -35,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header
             locale={locale}
             nav={m.nav}
+            roles={m.dashboard.role}
             menus={m.menus}
             site={m.site}
             subjects={m.subjects.map((subject) => ({ slug: subject.slug, title: subject.title }))}

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { GraduationCap, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { GraduationCap, Presentation, Sparkles } from "lucide-react";
 import PageHeader from "@/components/shared/PageHeader";
 import Stats from "@/components/sections/Stats";
 import CtaPanel from "@/components/sections/CtaPanel";
+import { Button } from "@/components/ui/button";
 import { iconByName } from "@/components/shared/art";
 import { getDictionary } from "@/lib/i18n";
 
@@ -63,6 +65,64 @@ export default async function AboutPage() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="page-container py-10 sm:py-14">
+        <div className="max-w-2xl">
+          <span className="section-kicker">
+            <Sparkles size={14} /> {page.teacherRole} / {page.studentRole}
+          </span>
+          <h2 className="section-title">{page.rolesTitle}</h2>
+          <p className="section-copy">{page.rolesCopy}</p>
+        </div>
+        <div className="mt-6 grid gap-5 md:grid-cols-2">
+          {[
+            {
+              Icon: Presentation,
+              title: page.teacherRole,
+              copy: page.teacherRoleCopy,
+              href: "/register",
+              cta: page.teacherCta,
+              dark: true,
+            },
+            {
+              Icon: GraduationCap,
+              title: page.studentRole,
+              copy: page.studentRoleCopy,
+              href: "/school",
+              cta: page.studentCta,
+              dark: false,
+            },
+          ].map((item) => (
+            <article
+              key={item.title}
+              className={
+                item.dark
+                  ? "hero-panel relative overflow-hidden rounded-[2rem] p-6 sm:p-8"
+                  : "soft-card relative overflow-hidden p-6 sm:p-8"
+              }
+            >
+              <span
+                className={
+                  item.dark
+                    ? "flex size-12 items-center justify-center rounded-2xl bg-[#b7f486]/15 text-[#b7f486]"
+                    : "flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"
+                }
+              >
+                <item.Icon size={22} />
+              </span>
+              <h3 className={item.dark ? "mt-4 text-xl font-black text-white" : "mt-4 text-xl font-black text-foreground"}>
+                {item.title}
+              </h3>
+              <p className={item.dark ? "mt-2 text-sm leading-7 text-white/60" : "mt-2 text-sm leading-7 text-muted-foreground"}>
+                {item.copy}
+              </p>
+              <Button className="mt-5" variant={item.dark ? "mint" : "secondary"} asChild>
+                <Link href={item.href}>{item.cta}</Link>
+              </Button>
+            </article>
+          ))}
         </div>
       </section>
 
