@@ -67,6 +67,7 @@ export default async function SchoolPage() {
           categoriesLabel={m.common.search}
           allLabel={m.common.allSubjects}
           courseWord={m.common.courses}
+          demo={m.demo}
         />
       </section>
 

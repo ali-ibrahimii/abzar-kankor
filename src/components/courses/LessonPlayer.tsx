@@ -21,12 +21,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/format";
 import type { Dictionary, Locale } from "@/lib/locales";
+import type { DemoSeed } from "@/lib/types";
 import type { Course, CourseLesson } from "@/lib/types";
 import { completedCount, findLesson, formatDate, lessonCount, progressPercent } from "@/lib/courses";
 import {
   enroll,
   getCourseBySlug,
   getCurrentUser,
+  ensureDemoData,
   getEnrollment,
   getNotes,
   saveNote,
@@ -49,6 +51,7 @@ export default function LessonPlayer({
   labels,
   courseLabels,
   common,
+  demo,
 }: {
   slug: string;
   lessonId: string;
@@ -58,13 +61,17 @@ export default function LessonPlayer({
   labels: Dictionary["pages"]["learn"];
   courseLabels: Dictionary["pages"]["course"];
   common: Dictionary["common"];
+  demo: DemoSeed;
 }) {
   useStoreVersion();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const [note, setNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    ensureDemoData(demo);
+    setMounted(true);
+  }, [demo]);
 
   const user = mounted ? getCurrentUser() : null;
   const custom = mounted ? getCourseBySlug(slug) : null;

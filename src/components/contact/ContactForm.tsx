@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Check, Mail, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { addMessage } from "@/lib/store";
 
 type Labels = {
   formTitle: string;
@@ -18,8 +19,6 @@ type Labels = {
   mailto: string;
   required: string;
 };
-
-const STORAGE_KEY = "abzar-messages";
 
 export default function ContactForm({ labels, email }: { labels: Labels; email: string }) {
   const [name, setName] = useState("");
@@ -38,13 +37,7 @@ export default function ContactForm({ labels, email }: { labels: Labels; email: 
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      const current = JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? "[]");
-      const list = Array.isArray(current) ? current : [];
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify([entry, ...list]));
-    } catch {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify([entry]));
-    }
+    addMessage(entry);
 
     setSent(true);
     setName("");

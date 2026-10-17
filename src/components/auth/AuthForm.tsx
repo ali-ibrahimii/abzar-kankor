@@ -43,7 +43,12 @@ export default function AuthForm({
   }, [demo]);
 
   function goDashboard() {
-    router.push("/dashboard");
+    let destination = "/dashboard";
+    if (typeof window !== "undefined") {
+      const next = new URLSearchParams(window.location.search).get("next");
+      if (next && next.startsWith("/") && !next.startsWith("//")) destination = next;
+    }
+    router.push(destination);
     router.refresh();
   }
 

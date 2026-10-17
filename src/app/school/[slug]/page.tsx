@@ -38,6 +38,7 @@ export default async function SubjectPage({ params }: { params: Promise<{ slug: 
       learn={m.pages.learn}
       common={m.common}
       siteName={m.site.name}
+      demo={m.demo}
     />
   );
 }

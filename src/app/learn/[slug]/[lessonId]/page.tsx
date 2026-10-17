@@ -41,6 +41,7 @@ export default async function LearnPage({
       labels={m.pages.learn}
       courseLabels={m.pages.course}
       common={m.common}
+      demo={m.demo}
     />
   );
 }

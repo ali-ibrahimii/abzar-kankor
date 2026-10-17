@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Search, SlidersHorizontal } from "lucide-react";
 import CourseCard, { type CourseCardLabels } from "./CourseCard";
 import type { Locale } from "@/lib/locales";
-import type { Course } from "@/lib/types";
-import { getEnrollments, getCourses, getCurrentUser, useStoreVersion } from "@/lib/store";
+import type { Course, DemoSeed } from "@/lib/types";
+import { ensureDemoData, getEnrollments, getCourses, getCurrentUser, useStoreVersion } from "@/lib/store";
 
 export default function CourseGrid({
   seedCourses,
@@ -16,6 +16,7 @@ export default function CourseGrid({
   categoriesLabel,
   allLabel,
   courseWord,
+  demo,
 }: {
   seedCourses: Course[];
   locale: Locale;
@@ -25,6 +26,7 @@ export default function CourseGrid({
   categoriesLabel: string;
   allLabel: string;
   courseWord: string;
+  demo: DemoSeed;
 }) {
   const version = useStoreVersion();
   const [query, setQuery] = useState("");
@@ -34,10 +36,11 @@ export default function CourseGrid({
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    ensureDemoData(demo);
     setCustom(getCourses().filter((course) => course.status === "published"));
     setEnrollments(getEnrollments());
     setUserId(getCurrentUser()?.id ?? null);
-  }, [version]);
+  }, [version, demo]);
 
   const courses = useMemo(() => {
     const seen = new Set(seedCourses.map((course) => course.slug));

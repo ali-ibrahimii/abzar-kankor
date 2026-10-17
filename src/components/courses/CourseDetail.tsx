@@ -26,7 +26,7 @@ import { artByColor, iconByName } from "@/components/shared/art";
 import { Button } from "@/components/ui/button";
 import { formatNumber } from "@/lib/format";
 import type { Dictionary, Locale } from "@/lib/locales";
-import type { Course } from "@/lib/types";
+import type { Course, DemoSeed } from "@/lib/types";
 import {
   completedCount,
   formatDate,
@@ -36,6 +36,7 @@ import {
   totalHours,
 } from "@/lib/courses";
 import {
+  ensureDemoData,
   enroll,
   getCourseBySlug,
   getCurrentUser,
@@ -63,6 +64,7 @@ export default function CourseDetail({
   learn,
   common,
   siteName,
+  demo,
 }: {
   slug: string;
   seedCourse: Course | null;
@@ -72,11 +74,15 @@ export default function CourseDetail({
   learn: LearnLabels;
   common: Dictionary["common"];
   siteName: string;
+  demo: DemoSeed;
 }) {
   useStoreVersion();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    ensureDemoData(demo);
+    setMounted(true);
+  }, [demo]);
 
   const user = mounted ? getCurrentUser() : null;
   const custom = mounted ? getCourseBySlug(slug) : null;
@@ -128,9 +134,11 @@ export default function CourseDetail({
   const courseId = course.id;
   const learnHref = nextLesson ? lessonHref(nextLesson.id) : `/learn/${course.slug}`;
 
+  const signInHref = `/login?next=${encodeURIComponent(`/school/${course.slug}`)}`;
+
   function startLearning() {
     if (!user) {
-      router.push("/login");
+      router.push(signInHref);
       return;
     }
     enroll(courseId, user.id);
@@ -282,8 +290,6 @@ export default function CourseDetail({
                   <ArrowLeft size={16} />
                 </Button>
               )}
-
-              <p className="mt-3 text-center text-[10px] font-bold text-muted-foreground">{labels.free}</p>
 
               <div className="mt-5 border-t border-border/70 pt-4">
                 <h2 className="text-xs font-black text-foreground">{labels.includes}</h2>
@@ -499,7 +505,7 @@ export default function CourseDetail({
             </div>
           </div>
           <Button variant="mint" asChild>
-            <Link href={user ? learnHref : "/login"}>
+            <Link href={user ? learnHref : signInHref}>
               {user ? labels.start : labels.signInToEnroll} <ArrowLeft size={15} />
             </Link>
           </Button>
